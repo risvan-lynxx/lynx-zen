@@ -2,6 +2,7 @@ const plugins = require("../lib/plugins");
 const { bot, isPrivate, clockString, pm2Uptime } = require("../lib");
 const { OWNER_NAME, BOT_NAME } = require("../config");
 const { hostname } = require("os");
+
 bot(
   {
     pattern: "menu",
@@ -10,8 +11,16 @@ bot(
     dontAddCommandList: true,
     type: "user",
   },
-  async (message, match, m, client) => {
-try{
+  async (message, match) => {
+    const contextInfo = {
+      forwardingScore: 1,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: '120363298577467093@newsletter',
+        newsletterName: BOT_NAME,
+        serverMessageId: -1
+      }
+    };
     if (match) {
       for (let i of plugins.commands) {
         if (
@@ -19,9 +28,8 @@ try{
           i.pattern.test(message.prefix + match)
         ) {
           const cmdName = i.pattern.toString().split(/\W+/)[1];
-let usern = message.pushName;
-          message.reply(`\`\`\`Command: ${message.prefix}${cmdName.trim()}
-Description: ${i.desc}\`\`\``);
+          message.reply(`Command: ${message.prefix}${cmdName.trim()}
+Description: ${i.desc}`);
         }
       }
     } else {
@@ -29,7 +37,6 @@ Description: ${i.desc}\`\`\``);
       let [date, time] = new Date()
         .toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
         .split(",");
-
       let menu = `\n╭━━━〔 ${BOT_INFO.split(";")[0]} 〕━━━┈
     ╭──────────────
   〄 │  *OWNER*:  ${BOT_INFO.split(";")[1]}
@@ -41,9 +48,6 @@ Description: ${i.desc}\`\`\``);
   〄 │  *VERSION*: ${require("../package.json").version}
     ╰──────────────
 ╰━━━━━━━━━━━━━━━\n`
-
-menu +=`╭───────────┈⊷\n`;
-
       let cmnd = [];
       let cmd;
       let category = [];
@@ -52,7 +56,7 @@ menu +=`╭───────────┈⊷\n`;
           cmd = command.pattern.toString().split(/\W+/)[1];
         }
 
-        if (!command.dontAddCommandList  && cmd !== undefined) {
+        if (!command.dontAddCommandList && cmd !== undefined) {
           let type = command.type ? command.type.toLowerCase() : "misc";
 
           cmnd.push({ cmd, type });
@@ -62,28 +66,30 @@ menu +=`╭───────────┈⊷\n`;
       });
       cmnd.sort();
       category.sort().forEach((cmmd) => {
-        menu += `│  ╭─────────────┈⊷`;
-        menu += `\n│  │ 「 *${cmmd.toUpperCase()}* 」`;
-        menu += `\n│  ╰┬────────────┈⊷`
-menu += `\n   ╭┴────────────┈⊷`;
         let comad = cmnd.filter(({ type }) => type == cmmd);
         comad.forEach(({ cmd }) => {
-          menu += `\n│   ||•➛   ${cmd.trim()}`;
+          menu += `\n⛥  _${cmd.trim()}_ `;
         });
-        menu += `\n│  ╰─────────────┈⊷`;
-        menu += `\n`;
       });
-      menu += `╰─────────────┈⊷`;
 
-      let penu = tiny(menu)
-      let img = config.BOT_INFO.split(';')[2]
-      return await message.sendFromUrl(img, {fileLength: "5555544444", gifPlayback: true, caption: (penu)}, {quoted: message })
+       return await message.client.sendMessage(
+        message.jid,
+        {
+          text: menu,
+          contextInfo
+        },
+        {
+          quoted: {
+            key: message.key,
+            message: {
+              conversation: message.text || message.body || ''
+            }
+          }
+        }
+      );
     }
-}catch(e){
-message.reply(e)
-}
   }
-);
+); 
 bot(
   {
     pattern: "list",
