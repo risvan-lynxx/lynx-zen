@@ -5,7 +5,7 @@ const fs = require("fs");
 const { PluginDB, installPlugin } = require("../lib/database/plugins");
 const plugins = require("../lib/event");
 const {
-    command,
+    bot,
     isPrivate,
     clockString,
     getUrl,
@@ -17,7 +17,7 @@ const {
     BOT_INFO
 } = require("../config");
 const config = require("../config");
-command(
+bot(
   {
     pattern: "menu",
     fromMe: isPrivate,
