@@ -1,22 +1,7 @@
-const { tiny } = require("../lib/fancy_font/fancy");
-const Jimp = require("jimp");
-const got = require("got");
-const fs = require("fs");
-const { PluginDB, installPlugin } = require("../lib/database/plugins");
-const plugins = require("../lib/event");
-const {
-    bot,
-    isPrivate,
-    clockString,
-    getUrl,
-    parsedJid,
-    isAdmin
-    
-} = require("../lib");
-const {
-    BOT_INFO
-} = require("../config");
-const config = require("../config");
+const plugins = require("../lib/plugins");
+const { bot, isPrivate, clockString, pm2Uptime } = require("../lib");
+const { OWNER_NAME, BOT_NAME } = require("../config");
+const { hostname } = require("os");
 bot(
   {
     pattern: "menu",
